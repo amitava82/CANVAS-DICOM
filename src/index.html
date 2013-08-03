@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html ng-app="app">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="css/bootstrap.css" />
+        <link rel="stylesheet" href="css/app.css" />
+        
+        <script src="lib/jquery-1.9.1.js"></script>
+        <script src="lib/angular.min.js"></script>
+        <script src="lib/ui-bootstrap-4.0.tmpl.min.js"></script>
+        
+        <script src="app/app.js"></script>
+        <script src="app/canvas.js"></script>
+        <script src="app/downloadManager.js"></script>
+        <script src="app/fileParser.js"></script>
+        <script src="app/ImageFIle.js"></script>
+    </head>
+    <body ng-controller="appController">    
+        <div id="container">
+            <div class="sidebar">
+                <div class="well well-small">
+                    <p>Download progress: 60%</p>
+                    <div class="progress">
+                        <div class="bar" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div class="study-list">
+                    <ul class="inline">
+                    <li><img src="http://placehold.it/100x100" alt=""></li>
+                    <li><img src="http://placehold.it/100x100" alt=""></li>
+                    <li><img src="http://placehold.it/100x100" alt=""></li>
+                    <li><img src="http://placehold.it/100x100" alt=""></li>
+                </ul>
+                </div>
+            </div>
+            <div class="panel">
+                <div id="toolboxHeader" class="well well-small">
+                    <div class="toolbox">
+                        <form class="form-horizontal"><div class="btn-group">
+                            <button class="btn">Window level</button>
+                            <button class="btn">Move</button>
+                            <button class="btn">Zoo</button>
+                            </div>
+                            <select 
+                                ng-model="selectedPreset" 
+                                ng-options="value as key for (key, value) in presets"
+                                ng-change="changePreset()">
+                                <option value="">Select</option>
+                            </select></form>
+                    </div>
+                </div>
+                <div id="viewer">
+                    <canvas id="port" canvas-painter 
+                        ng-mousedown="handleMouseDown($event)"    
+                        ng-mouseup="mousedown = false"
+                        ng-mouseleave="mousedown = false"
+                        
+                        ng-mousemove="handleMouseMove($event)"></canvas>
+                    <div class="info window" style="">
+                        <ul>
+                            <li>Window center: {{imageFile.windowCenter}}</li>
+                            <li>Window width: {{imageFile.windowWidth}}</li>
+                        </ul>
+                    </div>
+                    <div class="info cords" style="">
+                        <ul>
+                            <li>X: {{mouse.x}}</li>
+                            <li>Y: {{mouse.y}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </body>
+</html>
