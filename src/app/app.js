@@ -1,6 +1,12 @@
-angular.module('app', ['ui.bootstrap', 'downloadManager', 'fileParser'])
+angular.module('app', [
+    'ui.bootstrap', 
+    'downloadManager', 
+    'fileParser',
+    'viewerService'
+])
 
-.controller('appController', ['$scope', '$rootScope', 'downloadManager', function($scope, $rootScope, downloadManager){
+.controller('appController', ['$scope', '$rootScope', 'downloadManager', 'viewerService', function($scope, $rootScope, downloadManager, viewerService){
+    
     $scope.study = {};
     $scope.patient = {};
     $scope.series = []; //{SeriesUID, Images[]}
@@ -14,15 +20,28 @@ angular.module('app', ['ui.bootstrap', 'downloadManager', 'fileParser'])
         "bone": {"center": 480, "width": 2500},
         "head": {"center": 90, "width": 350}
     };
+    $scope.matrix = [[1,1], [1,2], [2,2], [4,4]];
+    $scope.selectedMatrix = $scope.matrix[0];
+    $scope.tools = {
+        'Window level': {},
+        'Move': {},
+        'Zoom': {}
+    };
     $scope.selectedPreset = null;
+    
+    $scope.viewer = viewerService.init($scope.selectedPreset);
     
     $scope.changePreset = function(){
         $scope.imageFile.windowCenter = $scope.selectedPreset.center;
         $scope.imageFile.windowCenter = $scope.selectedPreset.width;
         $rootScope.$broadcast('image.render', {image: $scope.imageFile})
-    }
+    };
     
-    downloadManager.downloadSeries(['data/image']).then(function(result){
+    $scope.changeMatrix = function(matrix){
+        $scope.viewer.setMatrix(matrix);
+    };
+    
+    downloadManager.downloadSeries(['data/image.zip']).then(function(result){
         var headers = {
             BITSALLOCATED: 16,
             COLUMNS: 512,
@@ -32,7 +51,10 @@ angular.module('app', ['ui.bootstrap', 'downloadManager', 'fileParser'])
             WC: 400,
             WW: 2000
         }
-        var image = new ImageFile(result[0].data, headers);
+        var zip = new JSZip(result[0].data);
+        
+        var image = new ImageFile(zip.file('image').asArrayBuffer(), headers);
+        $scope.viewer.canvasPainters[0].currentImage = image;
         $scope.imageFile = image;
         $rootScope.$broadcast('image.render', {image: image})
     })
@@ -60,5 +82,19 @@ angular.module('app', ['ui.bootstrap', 'downloadManager', 'fileParser'])
         e.preventDefault();
         $scope.mousedown = true;
     }
+    $scope.reset = function(){
+        
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    };
     
 }])
+.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++)
+      input.push(i);
+    return input;
+  };
+});

@@ -48,7 +48,9 @@ html, body{
     background-color: #000;
     height:100%;
 }
+#port {
 
+}
 .info {
     position:absolute;
     color: #FFF;
@@ -59,4 +61,25 @@ html, body{
 }
 .info .window {
     
+}
+.rows{
+    display:table-row;
+}
+.cells{
+    display: table-cell;
+    position:relative;
+}
+.rows .cells {
+     border-bottom: 1px solid #ddd;
+     border-right: 1px solid #ddd;
+}
+.rows:last-child .cells {
+     border-bottom: none;
+}
+.rows .cells:last-child{
+     border-right: none;
+}
+canvas {
+cursor: default;
+display: block;
 }

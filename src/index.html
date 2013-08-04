@@ -11,12 +11,17 @@
         <script src="lib/jquery-1.9.1.js"></script>
         <script src="lib/angular.min.js"></script>
         <script src="lib/ui-bootstrap-4.0.tmpl.min.js"></script>
+        <script src="lib/jszip.js"></script>
+        <script src="lib/jszip-inflate.js"></script>
+        <script src="lib/jszip-load.js"></script>
         
         <script src="app/app.js"></script>
+        <script src="app/viewerservice.js"></script>
         <script src="app/canvas.js"></script>
         <script src="app/downloadManager.js"></script>
         <script src="app/fileParser.js"></script>
         <script src="app/ImageFIle.js"></script>
+        <script src="app/CanvasPainter.js"></script>
     </head>
     <body ng-controller="appController">    
         <div id="container">
@@ -29,47 +34,57 @@
                 </div>
                 <div class="study-list">
                     <ul class="inline">
-                    <li><img src="http://placehold.it/100x100" alt=""></li>
-                    <li><img src="http://placehold.it/100x100" alt=""></li>
-                    <li><img src="http://placehold.it/100x100" alt=""></li>
-                    <li><img src="http://placehold.it/100x100" alt=""></li>
-                </ul>
+                        <li><img src="http://placehold.it/100x100" alt=""></li>
+                        <li><img src="http://placehold.it/100x100" alt=""></li>
+                        <li><img src="http://placehold.it/100x100" alt=""></li>
+                        <li><img src="http://placehold.it/100x100" alt=""></li>
+                    </ul>
                 </div>
             </div>
             <div class="panel">
                 <div id="toolboxHeader" class="well well-small">
                     <div class="toolbox">
                         <form class="form-horizontal"><div class="btn-group">
-                            <button class="btn">Window level</button>
-                            <button class="btn">Move</button>
-                            <button class="btn">Zoo</button>
+                            <button class="btn"
+                                ng-model="selectedTool" 
+                                ng-repeat="(key, value) in tools">{{key}}
+                            </button>
                             </div>
+                            <button class="btn" ng-click="reset()">Reset</button>
+                            <span>Preset:</span>
                             <select 
                                 ng-model="selectedPreset" 
                                 ng-options="value as key for (key, value) in presets"
                                 ng-change="changePreset()">
                                 <option value="">Select</option>
-                            </select></form>
+                            </select>
+                            <span>Matrix:</span>
+                            <select                                 
+                            ng-model="selectedMatrix"                                 
+                            ng-options="m for m in matrix"
+                            ng-change="changeMatrix(selectedMatrix)"    
+                            ></select>
+                        </form>
                     </div>
                 </div>
                 <div id="viewer">
-                    <canvas id="port" canvas-painter 
-                        ng-mousedown="handleMouseDown($event)"    
-                        ng-mouseup="mousedown = false"
-                        ng-mouseleave="mousedown = false"
-                        
-                        ng-mousemove="handleMouseMove($event)"></canvas>
-                    <div class="info window" style="">
-                        <ul>
-                            <li>Window center: {{imageFile.windowCenter}}</li>
-                            <li>Window width: {{imageFile.windowWidth}}</li>
-                        </ul>
-                    </div>
-                    <div class="info cords" style="">
-                        <ul>
-                            <li>X: {{mouse.x}}</li>
-                            <li>Y: {{mouse.y}}</li>
-                        </ul>
+                    <div class="rows" ng-repeat="x in [] | range:(viewer.matrix[0])">
+                        <div class="cells" ng-repeat="y in [] | range: (viewer.matrix[1])">
+                            <canvas ng-model="viewer.canvasPainters[x+y]" canvas-painter>
+                            </canvas>
+                            <div class="info window" style="">
+                                <ul>
+                                    <li>Window center: {{imageFile.windowCenter}}</li>
+                                    <li>Window width: {{imageFile.windowWidth}}</li>
+                                </ul>
+                            </div>
+                            <div class="info cords" style="">
+                                <ul>
+                                    <li>X: {{mouse.x}}</li>
+                                    <li>Y: {{mouse.y}}</li>
+                                </ul>
+                            </div>  
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,5 @@
 function ImageFile(arrayBuffer, headers){
     if(arguments.length < 2) throw new Error('Expected 2 arguments but received ' + arguments.length);
-
     
     this.pixelData = new Uint16Array(arrayBuffer);
     this.IUID = headers.IUID;
